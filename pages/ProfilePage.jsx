@@ -11,17 +11,17 @@ const StatCard = ({ label, value, accentColor = 'text-blue-600' }) => (
 const ProfilePage = () => {
     const { user } = useAuth();
     const [profileImage, setProfileImage] = useState(null);
-    const [history, setHistory] = useState([]); // State to hold history from DB
-    const [isLoading, setIsLoading] = useState(true); // State to handle loading
+    const [history, setHistory] = useState([]); 
+    const [isLoading, setIsLoading] = useState(true); 
 
     useEffect(() => {
-        // Fetch profile image from localStorage
+        
         const storedImage = localStorage.getItem('profile-image');
         if (storedImage) {
             setProfileImage(storedImage);
         }
 
-        // --- THIS IS THE NEW DATA FETCHING LOGIC ---
+        
         const fetchHistory = async () => {
             setIsLoading(true);
             try {
@@ -46,7 +46,7 @@ const ProfilePage = () => {
         };
 
         fetchHistory();
-    }, [user]); // Re-fetch if the user object changes
+    }, [user]); 
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];

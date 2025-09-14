@@ -3,10 +3,10 @@ import { useAuth } from '../context/AuthContext';
 import { AddIcon, ValuatorIcon, MarketplaceIcon, GuideIcon, VetIcon, TotalAnalysisIcon, TopBreedIcon, NoHistoryIcon } from '../components/Icons';
 
 const HistoryCard = ({ item }) => {
-    // FIX: The database provides a unique `_id`.
+    
     const detailsId = item._id || item.id;
     
-    // FIX: Safely access nested data from the `reportData` object.
+    
     const primaryBreed = item.reportData?.advanced_breed_detector?.primary_breed || 'Unknown Breed';
     const healthStatus = item.reportData?.ai_veterinary_assistant?.overall_health_status || 'Unknown';
     
@@ -92,7 +92,7 @@ const DashboardPage = () => {
         }
         const totalAnalyses = history.length;
         const breedCounts = history.reduce((acc, item) => {
-            // FIX: Access data through item.reportData and check if it exists
+            
             const breed = item.reportData?.advanced_breed_detector?.primary_breed;
             if (breed) {
                 acc[breed] = (acc[breed] || 0) + 1;
@@ -101,7 +101,7 @@ const DashboardPage = () => {
         }, {});
         const mostCommonBreed = Object.keys(breedCounts).length > 0 ? Object.entries(breedCounts).sort((a, b) => b[1] - a[1])[0][0] : 'No data yet';
         const conditionCounts = history.reduce((acc, item) => {
-            // FIX: Access data through item.reportData and check if it exists
+            
             const condition = item.reportData?.ai_veterinary_assistant?.overall_health_status;
             if (condition) {
                 acc[condition] = (acc[condition] || 0) + 1;
@@ -113,7 +113,7 @@ const DashboardPage = () => {
 
     const filteredHistory = useMemo(() => {
         if (!history) return [];
-        // FIX: Access data through item.reportData for filtering and use `createdAt` for sorting
+        
         return history.filter(item => 
             (item.reportData?.advanced_breed_detector?.primary_breed || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
             (item.reportData?.ai_veterinary_assistant?.overall_health_status || '').toLowerCase().includes(searchTerm.toLowerCase())
@@ -131,7 +131,7 @@ const DashboardPage = () => {
                 <section className="mb-12 text-center">
                     <button
                         onClick={() => window.location.hash = '/start-analysis'}
-                        // FIX: Using consistent theme colors
+                        
                         className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-4 border border-transparent text-lg font-bold rounded-xl shadow-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transform hover:scale-105 transition-transform duration-300"
                     >
                         <AddIcon />

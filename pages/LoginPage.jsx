@@ -8,22 +8,21 @@ const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
 
-  // src/pages/LoginPage.jsx
+  
 
-const handleSubmit = async (e) => { // Make the function async
+const handleSubmit = async (e) => { 
     e.preventDefault();
     if (isLoading) return;
 
     setIsLoading(true);
     try {
         await login(email, password);
-        // On success, the AuthContext navigates away, so we don't need to do anything here.
+        
     } catch (error) {
-        // The error is already handled and alerted by the AuthContext.
-        // We just need to catch it here so the finally block can run.
+        
         console.log("Login failed on page.");
     } finally {
-        setIsLoading(false); // This will run whether login succeeds or fails.
+        setIsLoading(false); 
     }
 };
 

@@ -4,9 +4,9 @@ import ImageUploader from '../components/ImageUploader';
 
 import { getPashuSahayakReport, detectBreedWithYOLOv8 } from '../services/geminiService';
 import CameraCapture from '../components/CameraCapture';
-import { CameraIcon as TakePhotoIcon } from '../components/Icons'; // Renamed to avoid conflict
+import { CameraIcon as TakePhotoIcon } from '../components/Icons'; 
 
-// Loading Overlay remains the same
+
 const LoadingOverlay = () => (
   <div className="absolute inset-0 bg-white bg-opacity-90 flex flex-col items-center justify-center z-50 rounded-lg text-center p-4">
       <style>{`
@@ -54,8 +54,7 @@ const AnalyzerPage = () => {
    const [yoloResult, setYoloResult] = React.useState(null);
     const [loadingMessage, setLoadingMessage] = React.useState('');
 
-    // ADD THIS HELPER FUNCTION
-    // This function converts a dataURL (from the camera) into a File object
+    
     const dataURLtoFile = (dataurl, filename) => {
         const arr = dataurl.split(',');
         const mime = arr[0].match(/:(.*?);/)[1];
@@ -68,19 +67,15 @@ const AnalyzerPage = () => {
         return new File([u8arr], filename, { type: mime });
     };
 
-    // In file: project/src/pages/AnalyzerPage.jsx
-
-    // In file: project/src/pages/AnalyzerPage.jsx
-
-    // This function now ONLY sets the state. It no longer calls the API.
+    
     const handleFileSelect = (file) => {
-        // Clear any previous errors when a new file is selected
+        
         setError(null);
 
         const reader = new FileReader();
         reader.onload = () => {
             setSelectedImage({
-                file: file, // We still need the raw File object for YOLOv8
+                file: file, 
                 dataUrl: reader.result,
                 mimeType: file.type
             });
@@ -88,12 +83,12 @@ const AnalyzerPage = () => {
         reader.readAsDataURL(file);
     };
     
-    // This function also now ONLY sets the state.
+    
     const handleCapture = (dataUrl) => {
         setError(null);
         setIsCameraOpen(false);
         const fileName = `capture_${Date.now()}.jpeg`;
-        const file = dataURLtoFile(dataUrl, fileName); // Uses the helper function you added previously
+        const file = dataURLtoFile(dataUrl, fileName); 
 
         setSelectedImage({
             file: file,
@@ -102,14 +97,12 @@ const AnalyzerPage = () => {
         });
     }
     
-    // NOTE: This function name was changed for clarity, but it just closes the camera.
+    
     const handleCloseCamera = () => {
         setIsCameraOpen(false);
     };
 
-    // In file: project/src/pages/AnalyzerPage.jsx
-
-    // src/pages/AnalyzerPage.jsx
+    
 
 const handleAnalyze = async () => {
     if (!selectedImage || !selectedImage.file) {
@@ -123,16 +116,16 @@ const handleAnalyze = async () => {
 
     setIsLoading(true);
     setError(null);
-    setYoloResult(null); // Reset previous results
+    setYoloResult(null); 
 
     try {
-        // Step 1: Call YOLOv8 and update the UI
+        
         setLoadingMessage('Detecting breed with local model...');
         const yoloResultData = await detectBreedWithYOLOv8(selectedImage.file);
         const detectedBreedName = yoloResultData && yoloResultData.length > 0 ? yoloResultData[0].breed : null;
         setYoloResult(yoloResultData);
 
-        // Step 2: Call Gemini for the full report
+        
         setLoadingMessage('Breed detected! Getting detailed analysis from Gemini AI...');
         const finalReport = await getPashuSahayakReport(
             selectedImage.dataUrl.split(',')[1],
@@ -142,8 +135,7 @@ const handleAnalyze = async () => {
             detectedBreedName
         );
         
-        // --- THIS IS THE CORRECTED DATABASE SAVING LOGIC ---
-        // Step 3: Save the final report to your database
+        
         setLoadingMessage('Saving report to your permanent history...');
         const user = JSON.parse(sessionStorage.getItem('cattle-classifier-user'));
         
@@ -161,7 +153,7 @@ const handleAnalyze = async () => {
                 image: selectedImage.dataUrl,
                 location: location,
                 analysisData: finalReport,
-                 yoloData: yoloResultData // <-- ADD THIS LINE
+                 yoloData: yoloResultData 
             })
         });
 
@@ -172,7 +164,7 @@ const handleAnalyze = async () => {
 
         const savedAnalysis = await response.json();
 
-        // Step 4: Navigate to the new record's detail page
+        
         window.location.hash = `/details/${savedAnalysis._id}`;
 
     } catch (err) {
@@ -185,7 +177,7 @@ const handleAnalyze = async () => {
     const steps = ['Select Image', 'Add Details & Analyze'];
     const currentStep = !selectedImage ? 0 : 1;
 
-    // REMOVED: The `if(isCameraOpen)` block was removed from here.
+    
 
     return (
         <> {/* Use a Fragment to wrap the page and the potential modal */}
@@ -215,7 +207,7 @@ const handleAnalyze = async () => {
                     {isLoading && <LoadingOverlay />}
                     
                     {selectedImage ? (
-                        // Step 2: Add Details & Analyze
+                        
                         <div className="w-full flex flex-col items-center text-center">
                             <p className="text-stone-600 mb-4">Review your selected image and provide details for a hyper-local analysis.</p>
                             <img src={selectedImage.dataUrl} alt="Selected preview" className="max-w-md w-full h-auto rounded-md shadow-md mb-6" />
@@ -274,7 +266,7 @@ const handleAnalyze = async () => {
                             </div>
                         </div>
                     ) : (
-                        // Step 1: Select Image
+                        
                         <div className="w-full flex flex-col items-center text-center max-w-lg">
                             <p className="text-stone-600 mb-6">Select an image from your device or take a new photo.</p>
                             <ImageUploader onFileSelect={handleFileSelect} />
