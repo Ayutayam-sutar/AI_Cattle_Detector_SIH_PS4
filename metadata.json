@@ -1,0 +1,7 @@
+{
+  "name": "Cattle Classifier AI",
+  "description": "An AI-powered tool to automate the Animal Type Classification (ATC) for cattle and buffaloes using image analysis, aligned with India's Rashtriya Gokul Mission (RGM).",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

@@ -1,0 +1,97 @@
+// In file: backend/routes/generate.js
+
+const express = require('express');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { protect } = require('../middleware/authMiddleware.js'); // BRICK 1: Import middleware
+require('dotenv').config();
+
+const router = express.Router();
+
+// Quick check: Make sure this variable name matches your .env file.
+// We previously used GEMINI_API_KEY.
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY); 
+
+// BRICK 2: Initialize models once for efficiency
+const reportModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash", generationConfig: { responseMimeType: "application/json" } });
+const valuationModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash", generationConfig: { responseMimeType: "application/json" } });
+const assistantModel = genAI.getGenerativeModel({ 
+    model: "gemini-1.5-flash",
+    systemInstruction: `You are an expert AI Veterinary Assistant for farmers in India named "Pashu Mitra AI". Provide helpful, safe, and practical advice on cattle and buffalo care. If the situation is serious, strongly advise consulting a qualified local veterinarian immediately. Keep answers concise and easy to understand. Start your response with "Pashu Mitra AI:".`
+});
+
+
+// ROUTE 1: HYBRID REPORT
+router.post('/report', protect, async (req, res) => { // BRICK 1: Added `protect`
+    console.log('Request received at HYBRID /api/generate/report');
+    const { base64Image, mimeType, location, language, yoloBreed } = req.body;
+
+    if (!base64Image || !mimeType) {
+        return res.status(400).json({ error: 'Image data is missing.' });
+    }
+
+    try {
+        const imagePart = { inlineData: { data: base64Image, mimeType: mimeType } };
+        let yoloHint = `My custom vision model has detected the breed as '${yoloBreed}'. Please verify this detection. If you strongly agree, use this breed for the report. If you disagree, identify the correct breed.`;
+        if (!yoloBreed) yoloHint = "My custom vision model did not provide an initial detection.";
+        
+        const textPart = `Analyze the provided image. Location: ${location}. Language for Advice: ${language}. CONTEXT: ${yoloHint}. Generate a complete Pashu Sahayak report. Ensure the output is a single, valid JSON object and nothing else.`;
+        
+        // BRICK 2: Use the pre-initialized model
+        const result = await reportModel.generateContent([textPart, imagePart]);
+        const report = JSON.parse(result.response.text());
+
+        console.log('✅ Hybrid report generated successfully.');
+        res.json(report);
+    } catch (error) {
+        console.error('❌ Error calling Google GenAI for report:', error);
+        res.status(500).json({ error: 'Failed to generate AI report.' });
+    }
+});
+
+
+// ROUTE 2: VALUATION
+router.post('/valuation', protect, async (req, res) => { // BRICK 1: Added `protect`
+    console.log('Request received at /api/generate/valuation');
+    const inputs = req.body;
+
+    try {
+        const prompt = `Calculate the fair market value for a livestock animal with these characteristics:
+        - Breed: ${inputs.breed}
+        - Age: ${inputs.age} years
+        - Peak Milk Yield: ${inputs.milkYield} liters/day
+        - Health Condition: ${inputs.health}
+        - Location: ${inputs.location}
+        Provide a realistic price range in INR and list the key valuation factors. The output must be a single, valid JSON object.`;
+
+        // BRICK 2: Use the pre-initialized model
+        const result = await valuationModel.generateContent(prompt);
+        const valuation = JSON.parse(result.response.text());
+        
+        console.log('✅ Valuation generated successfully.');
+        res.json(valuation);
+    } catch (error) {
+        console.error('❌ Error calling Google GenAI for valuation:', error);
+        res.status(500).json({ error: 'Failed to generate valuation.' });
+    }
+});
+
+
+// ROUTE 3: AI ASSISTANT
+router.post('/assistant', protect, async (req, res) => { // BRICK 1: Added `protect`
+    console.log('Request received at /api/generate/assistant');
+    const { message } = req.body;
+
+    try {
+        // BRICK 2: Use the pre-initialized model
+        const result = await assistantModel.generateContent(message);
+        const responseText = result.response.text();
+        
+        console.log('✅ AI Assistant response generated.');
+        res.send(responseText); // Send back plain text
+    } catch (error) {
+        console.error('❌ Error calling Google GenAI for assistant:', error);
+        res.status(500).json({ error: 'Failed to get AI assistant response.' });
+    }
+});
+
+module.exports = router;

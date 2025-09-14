@@ -1,0 +1,7 @@
+# backend/python_model/requirements.txt
+
+flask
+flask-cors
+ultralytics
+Pillow
+numpy
