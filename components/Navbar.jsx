@@ -8,10 +8,10 @@ const Navbar = () => {
     const dropdownRef = useRef(null);
     const mobileMenuRef = useRef(null);
 
-    // NEW: State to track the active navigation link
+    
     const [activeHash, setActiveHash] = useState(window.location.hash);
 
-    // MODIFIED: useEffect to handle clicks and hash changes
+    
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -22,24 +22,24 @@ const Navbar = () => {
             }
         };
         
-        // NEW: Function to update the active hash from the URL
+        
         const handleHashChange = () => {
             setActiveHash(window.location.hash);
         };
 
         document.addEventListener("mousedown", handleClickOutside);
-        window.addEventListener('hashchange', handleHashChange); // Listen for hash changes
+        window.addEventListener('hashchange', handleHashChange); 
 
-        // Set initial hash correctly
+        
         handleHashChange();
 
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
-            window.removeEventListener('hashchange', handleHashChange); // Cleanup listener
+            window.removeEventListener('hashchange', handleHashChange); 
         };
     }, []);
 
-    // Navigation items with icons for better visual understanding
+   
     const navItems = [
         { 
             name: 'Dashboard', 
@@ -127,13 +127,13 @@ const Navbar = () => {
                         {user ? (
                             <>
                                 {navItems.map((item) => {
-                                    // NEW: Check if the current item is the active one
+                                    
                                     const isActive = activeHash === `#${item.hash}`;
                                     return (
                                         <button
                                             key={item.hash}
                                             onClick={() => handleNavigation(item.hash)}
-                                            // MODIFIED: Apply active classes conditionally
+                                            
                                             className={`${linkButtonClassName} ${isActive ? 'bg-emerald-50 text-emerald-600 font-semibold' : ''}`}
                                         >
                                             {item.icon}

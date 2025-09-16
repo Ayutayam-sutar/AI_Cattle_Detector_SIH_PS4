@@ -6,16 +6,16 @@ const CameraCapture = ({ onCapture, onClose }) => {
     const [isCameraReady, setIsCameraReady] = useState(false);
     const [isFlashing, setIsFlashing] = useState(false);
     const [error, setError] = useState(null);
-    const [cameraFacingMode, setCameraFacingMode] = useState('environment'); // Default to back camera
+    const [cameraFacingMode, setCameraFacingMode] = useState('environment'); 
 
-    // This effect handles starting and stopping the camera stream
+    
     useEffect(() => {
         let stream = null;
         
         const startCamera = async () => {
             setError(null);
 
-            // Check for secure context (https:// or localhost)
+            
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                 setError("Camera API is not available on this browser.");
                 return;
@@ -26,7 +26,7 @@ const CameraCapture = ({ onCapture, onClose }) => {
             }
 
             try {
-                // Try to get back camera first
+                
                 let constraints = { 
                     video: { 
                         width: { ideal: 1920 },
@@ -35,7 +35,7 @@ const CameraCapture = ({ onCapture, onClose }) => {
                     } 
                 };
                 
-                // If we're on a desktop without environment camera, fall back to user camera
+                
                 if (cameraFacingMode === 'environment') {
                     try {
                         stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -71,7 +71,7 @@ const CameraCapture = ({ onCapture, onClose }) => {
                     } else if (err.name === "NotReadableError" || err.name === "TrackStartError") {
                         errorMessage = "The camera is already in use by another application.";
                     } else if (err.name === "OverconstrainedError") {
-                        // Try with front camera if back camera is not available
+                        
                         try {
                             let constraints = { 
                                 video: { 
@@ -103,7 +103,7 @@ const CameraCapture = ({ onCapture, onClose }) => {
 
         startCamera();
 
-        // Cleanup function to stop the camera stream when the component unmounts
+        
         return () => {
             if (videoRef.current && videoRef.current.srcObject) {
                 videoRef.current.srcObject.getTracks().forEach(track => track.stop());
@@ -117,7 +117,7 @@ const CameraCapture = ({ onCapture, onClose }) => {
             return;
         }
 
-        setIsFlashing(true); // Trigger flash animation
+        setIsFlashing(true); 
 
         setTimeout(() => {
             const video = videoRef.current;
@@ -128,30 +128,30 @@ const CameraCapture = ({ onCapture, onClose }) => {
             canvas.height = video.videoHeight;
             
             if (context) {
-                // Clear the canvas
+                
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 
-                // For front camera, flip the image horizontally
+                
                 if (cameraFacingMode === 'user') {
                     context.translate(canvas.width, 0);
                     context.scale(-1, 1);
                     context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    context.setTransform(1, 0, 0, 1, 0, 0); // Reset transform
+                    context.setTransform(1, 0, 0, 1, 0, 0); 
                 } else {
                     context.drawImage(video, 0, 0, canvas.width, canvas.height);
                 }
 
-                const dataUrl = canvas.toDataURL('image/jpeg', 0.9); // 90% quality
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.9); 
                 onCapture(dataUrl);
             } else {
                 setError("Failed to capture image. Please try again.");
             }
             setIsFlashing(false);
-        }, 100); // Short delay for the flash effect
+        }, 100); 
     };
 
     const switchCamera = async () => {
-        // Stop the current stream
+        
         if (videoRef.current && videoRef.current.srcObject) {
             videoRef.current.srcObject.getTracks().forEach(track => track.stop());
         }

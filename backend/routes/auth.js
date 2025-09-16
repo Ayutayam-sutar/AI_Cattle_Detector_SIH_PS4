@@ -6,14 +6,14 @@ const User = require('../models/User.js');
 
 const router = express.Router();
 
-// --- Helper function to generate a token ---
+
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
         expiresIn: '30d',
     });
 };
 
-// --- @route   POST /api/auth/signup ---
+
 router.post('/signup', async (req, res) => {
     const { name, email, password } = req.body;
     try {
@@ -33,7 +33,7 @@ router.post('/signup', async (req, res) => {
     }
 });
 
-// --- @route   POST /api/auth/login ---
+
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     try {

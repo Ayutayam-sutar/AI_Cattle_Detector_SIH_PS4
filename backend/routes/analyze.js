@@ -7,11 +7,11 @@ const FormData = require('form-data');
 
 const router = express.Router();
 
-// Configure Multer for file uploads in memory
+
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-// Define the /api/analyze endpoint
+
 router.post('/', upload.single('image'), async (req, res) => {
     console.log('Request received at /api/analyze');
     if (!req.file) {
