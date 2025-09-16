@@ -160,28 +160,54 @@ export async function getLivestockValuation(inputs) {
 }
 
 
-export async function getAIAssistantResponse(message) {
-    try {
-        const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: message,
-            config: {
-                systemInstruction: `You are an expert AI Veterinary Assistant for farmers in India. Your name is "Pashu Mitra AI".
-                Your goal is to provide helpful, safe, and practical advice on cattle and buffalo care.
-                - Always prioritize the animal's well-being.
-                - If the situation sounds serious, strongly advise the user to consult a qualified local veterinarian immediately. Do not provide medical advice for emergencies.
-                - Keep your answers concise, easy to understand for a non-expert, and actionable. Use bullet points where possible.
-                - Base your advice on common best practices for animal husbandry in the Indian context.
-                - Start your response by introducing yourself as "Pashu Mitra AI".`,
-            },
-        });
-        return response.text;
-    } catch (error) {
-        console.error("Error getting AI assistant response:", error);
-        return "I'm sorry, I'm having trouble connecting right now. Please try again later.";
-    }
-}
 
+const fileToBase64 = (file) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result.split(',')[1]); 
+    reader.onerror = error => reject(error);
+});
+
+
+export const getAIAssistantResponse = async (message, imageObject) => {
+    try {
+        const storedUser = sessionStorage.getItem('cattle-classifier-user');
+        const user = storedUser ? JSON.parse(storedUser) : null;
+        if (!user || !user.token) {
+            throw new Error("Authentication token not found.");
+        }
+
+        let requestBody = { message };
+
+        
+        if (imageObject && imageObject.file) {
+            const imageBase64 = await fileToBase64(imageObject.file);
+            requestBody.imageBase64 = imageBase64;
+            requestBody.mimeType = imageObject.file.type;
+        }
+
+        const response = await fetch('http://localhost:3001/api/generate/assistant', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user.token}`
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.error || 'Failed to get AI assistant response.');
+        }
+
+        const textResponse = await response.text();
+        return textResponse;
+
+    } catch (error) {
+        console.error('❌ Error calling the Assistant backend service:', error);
+        throw error;
+    }
+};
 
 /**
  * ***************************************************************
@@ -195,10 +221,10 @@ export async function getAIAssistantResponse(message) {
  * e.g., [{ breed: 'Gir', confidence: 0.91, ... }]
  */
 export async function detectBreedWithYOLOv8(imageFile) {
-  // This is the URL of the Node.js server you created.
+  
   const endpoint = 'http://localhost:3001/api/analyze';
 
-  // We use FormData to properly send the image file.
+  
   const formData = new FormData();
   formData.append('image', imageFile);
 
@@ -207,10 +233,10 @@ export async function detectBreedWithYOLOv8(imageFile) {
     
     const response = await fetch(endpoint, {
       method: 'POST',
-      body: formData, // No 'Content-Type' header is needed; the browser sets it for FormData.
+      body: formData, 
     });
 
-    // Handle cases where the server responds with an error.
+    
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.error || 'Breed detection failed on the server.');
@@ -222,7 +248,7 @@ export async function detectBreedWithYOLOv8(imageFile) {
 
   } catch (error) {
     console.error('❌ Error calling the YOLOv8 backend:', error);
-    // Re-throw the error so the component that called this function can handle it.
+    
     throw error;
   }
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Spinner from '../components/Spinner';
 import { PositiveIcon, NeutralIcon, ConcernIcon, BreedDetectorIcon, VetAssistantIcon, LocalAdvisorIcon, BackIcon, ShareIcon } from '../components/Icons';
-// Note: You might need to install html2canvas if you haven't already: npm install html2canvas
+
 import html2canvas from 'html2canvas';
 
 const InfoCard = ({ title, children, icon }) => (
@@ -26,20 +26,20 @@ const DetailsPage = () => {
             setLoading(true);
             setError(null);
             try {
-                // 1. Get the record ID from the URL hash
+                
                 const recordId = window.location.hash.split('/')[2];
                 if (!recordId) {
                     throw new Error('Record ID not found in URL.');
                 }
 
-                // 2. Get user data (and token) from session storage
+                
                 const storedUser = sessionStorage.getItem('cattle-classifier-user');
                 const user = storedUser ? JSON.parse(storedUser) : null;
                 if (!user || !user.token) {
                     throw new Error('You must be logged in to view this page.');
                 }
 
-                // 3. Fetch the specific analysis from your backend API
+                
                 const response = await fetch(`http://localhost:3001/api/analyses/${recordId}`, {
                     headers: {
                         'Authorization': `Bearer ${user.token}`
@@ -63,7 +63,7 @@ const DetailsPage = () => {
         };
 
         fetchAnalysisDetails();
-    }, []); // Runs once when the component loads
+    }, []); 
 
     const handleShare = async () => {
         if (!reportRef.current || isSharing) return;
@@ -71,7 +71,7 @@ const DetailsPage = () => {
         setIsSharing(true);
         try {
             const element = reportRef.current;
-            const canvas = await html2canvas(element, { scale: 2, backgroundColor: '#f5f5f4', useCORS: true }); // bg-stone-50
+            const canvas = await html2canvas(element, { scale: 2, backgroundColor: '#f5f5f4', useCORS: true }); 
             const link = document.createElement('a');
             link.download = `pashudrishti-report-${record?._id || Date.now()}.png`;
             link.href = canvas.toDataURL('image/png');
