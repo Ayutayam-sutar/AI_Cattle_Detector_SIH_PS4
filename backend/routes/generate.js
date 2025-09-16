@@ -77,15 +77,47 @@ router.post('/valuation', protect, async (req, res) => { // BRICK 1: Added `prot
 
 
 // ROUTE 3: AI ASSISTANT
-router.post('/assistant', protect, async (req, res) => { // BRICK 1: Added `protect`
+// backend/routes/generate.js
+
+// ... (keep your other imports and model initializations at the top)
+
+// Helper function to convert image data for Gemini
+function fileToGenerativePart(buffer, mimeType) {
+    return {
+        inlineData: {
+            data: buffer.toString("base64"),
+            mimeType
+        },
+    };
+}
+
+// --- REPLACE the existing '/assistant' route with this ---
+router.post('/assistant', protect, async (req, res) => {
     console.log('Request received at /api/generate/assistant');
-    const { message } = req.body;
+    // Now we expect message AND potentially an image
+    const { message, imageBase64, mimeType } = req.body;
+
+    if (!message) {
+        return res.status(400).json({ error: "Message is required." });
+    }
 
     try {
-        // BRICK 2: Use the pre-initialized model
-        const result = await assistantModel.generateContent(message);
+        let result;
+
+        // Check if image data was sent with the message
+        if (imageBase64 && mimeType) {
+            // If yes, this is a multimodal request (image + text)
+            const imageBuffer = Buffer.from(imageBase64, 'base64');
+            const imagePart = fileToGenerativePart(imageBuffer, mimeType);
+            const promptParts = [message, imagePart]; // Send both text and image
+            result = await assistantModel.generateContent(promptParts);
+        } else {
+            // If no, this is a text-only request
+            result = await assistantModel.generateContent(message);
+        }
+
         const responseText = result.response.text();
-        
+
         console.log('✅ AI Assistant response generated.');
         res.send(responseText); // Send back plain text
     } catch (error) {

@@ -18,6 +18,8 @@ const generateRoute = require('./routes/generate');
 const authRoutes = require('./routes/auth.js');
 const analysisRoutes = require('./routes/analysisRoutes.js');
 
+const chatbotRoutes = require('./routes/chatbotRoutes');
+
 const app = express();
 // --- CHANGE THIS --- (Use environment variable for port, default to 5000)
 const port = process.env.PORT || 3001;
@@ -49,6 +51,8 @@ app.use('/api/analyses', analysisRoutes); // <-- ADD THIS
 // --- KEEP THESE --- (Your existing routes)
 app.use('/api/analyze', analyzeRoute);
 app.use('/api/generate', generateRoute);
+
+app.use('/api/chatbot', chatbotRoutes);
 
 
 // --- Start the server --- (No changes here, just uses the new port variable)

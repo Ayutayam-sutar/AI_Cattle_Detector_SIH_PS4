@@ -16,6 +16,8 @@ import StartAnalysisPage from './pages/StartAnalysisPage';
 import MarketplacePage from './pages/MarketplacePage';
 import ValuatorPage from './pages/ValuatorPage';
 
+import AIVetAssistant from './components/AIVetAssistant/AIVetAssistant.jsx';
+
 // A simple hash-based router component
 const Router = () => {
     // We get the hash path, remove the #, and default to '/'
@@ -193,6 +195,9 @@ const App = () => {
                 `}</style>
                 <Navbar />
                 <Router />
+
+                <AIVetAssistant />
+
             </div>
         </AuthProvider>
     );
