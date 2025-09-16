@@ -18,6 +18,8 @@ const generateRoute = require('./routes/generate');
 const authRoutes = require('./routes/auth.js');
 const analysisRoutes = require('./routes/analysisRoutes.js');
 
+const chatbotRoutes = require('./routes/chatbotRoutes');
+
 const app = express();
 
 const port = process.env.PORT || 3001;
@@ -44,6 +46,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/analyses', analysisRoutes); 
 app.use('/api/analyze', analyzeRoute);
 app.use('/api/generate', generateRoute);
+
+app.use('/api/chatbot', chatbotRoutes);
 
 
 

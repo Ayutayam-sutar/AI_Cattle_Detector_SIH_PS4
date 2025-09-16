@@ -10,7 +10,11 @@ const AIAssistant = () => {
     ]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+<<<<<<< HEAD
+    // State to hold the selected image file and its preview URL
+=======
     
+>>>>>>> 0d0cc4a9fe94227d37c4a54287e2451c6c990d32
     const [image, setImage] = useState(null); 
     const messagesEndRef = useRef(null);
 
@@ -20,15 +24,24 @@ const AIAssistant = () => {
 
     useEffect(scrollToBottom, [messages]);
     
+<<<<<<< HEAD
+    // Function to handle the user selecting an image file
+=======
     
+>>>>>>> 0d0cc4a9fe94227d37c4a54287e2451c6c990d32
     const handleImageSelect = (e) => {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = () => {
                 setImage({
+<<<<<<< HEAD
+                    file: file, // We need the file for the backend
+                    dataUrl: reader.result, // We need the dataUrl for the preview
+=======
                     file: file, 
                     dataUrl: reader.result, 
+>>>>>>> 0d0cc4a9fe94227d37c4a54287e2451c6c990d32
                 });
             };
             reader.readAsDataURL(file);
@@ -36,13 +49,21 @@ const AIAssistant = () => {
     };
 
     const handleSend = async () => {
+<<<<<<< HEAD
+        // Allow sending a message if there is text OR an image
+=======
         
+>>>>>>> 0d0cc4a9fe94227d37c4a54287e2451c6c990d32
         if ((!input.trim() && !image) || isLoading) return;
 
         const userMessage = { 
             sender: 'user', 
             text: input,
+<<<<<<< HEAD
+            image: image?.dataUrl // Add the image preview URL to the message
+=======
             image: image?.dataUrl 
+>>>>>>> 0d0cc4a9fe94227d37c4a54287e2451c6c990d32
         };
         setMessages(prev => [...prev, userMessage]);
         
@@ -50,11 +71,19 @@ const AIAssistant = () => {
         const imageToSend = image;
 
         setInput('');
+<<<<<<< HEAD
+        setImage(null); // Clear the image preview after sending
+        setIsLoading(true);
+
+        try {
+            // Pass both the text and the image object to your service
+=======
         setImage(null); 
         setIsLoading(true);
 
         try {
             
+>>>>>>> 0d0cc4a9fe94227d37c4a54287e2451c6c990d32
             const aiResponse = await getAIAssistantResponse(textToSend, imageToSend);
             const aiMessage = { sender: 'ai', text: aiResponse };
             setMessages(prev => [...prev, aiMessage]);

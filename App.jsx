@@ -17,6 +17,12 @@ import MarketplacePage from './pages/MarketplacePage';
 import ValuatorPage from './pages/ValuatorPage';
 
 
+import AIVetAssistant from './components/AIVetAssistant/AIVetAssistant.jsx';
+
+// A simple hash-based router component
+
+
+
 const Router = () => {
     
     const [currentPath, setCurrentPath] = useState(window.location.hash.slice(1) || '/');
@@ -193,6 +199,9 @@ const App = () => {
                 `}</style>
                 <Navbar />
                 <Router />
+
+                <AIVetAssistant />
+
             </div>
         </AuthProvider>
     );

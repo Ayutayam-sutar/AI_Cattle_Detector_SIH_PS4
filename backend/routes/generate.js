@@ -75,7 +75,16 @@ router.post('/valuation', protect, async (req, res) => {
 });
 
 
+<<<<<<< HEAD
+// ROUTE 3: AI ASSISTANT
+// backend/routes/generate.js
 
+// ... (keep your other imports and model initializations at the top)
+
+// Helper function to convert image data for Gemini
+=======
+
+>>>>>>> 0d0cc4a9fe94227d37c4a54287e2451c6c990d32
 function fileToGenerativePart(buffer, mimeType) {
     return {
         inlineData: {
@@ -85,10 +94,17 @@ function fileToGenerativePart(buffer, mimeType) {
     };
 }
 
+<<<<<<< HEAD
+// --- REPLACE the existing '/assistant' route with this ---
+router.post('/assistant', protect, async (req, res) => {
+    console.log('Request received at /api/generate/assistant');
+    // Now we expect message AND potentially an image
+=======
 
 router.post('/assistant', protect, async (req, res) => {
     console.log('Request received at /api/generate/assistant');
     
+>>>>>>> 0d0cc4a9fe94227d37c4a54287e2451c6c990d32
     const { message, imageBase64, mimeType } = req.body;
 
     if (!message) {
@@ -98,6 +114,17 @@ router.post('/assistant', protect, async (req, res) => {
     try {
         let result;
 
+<<<<<<< HEAD
+        // Check if image data was sent with the message
+        if (imageBase64 && mimeType) {
+            // If yes, this is a multimodal request (image + text)
+            const imageBuffer = Buffer.from(imageBase64, 'base64');
+            const imagePart = fileToGenerativePart(imageBuffer, mimeType);
+            const promptParts = [message, imagePart]; // Send both text and image
+            result = await assistantModel.generateContent(promptParts);
+        } else {
+            // If no, this is a text-only request
+=======
         
         if (imageBase64 && mimeType) {
             
@@ -107,6 +134,7 @@ router.post('/assistant', protect, async (req, res) => {
             result = await assistantModel.generateContent(promptParts);
         } else {
             
+>>>>>>> 0d0cc4a9fe94227d37c4a54287e2451c6c990d32
             result = await assistantModel.generateContent(message);
         }
 
