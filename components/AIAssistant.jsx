@@ -109,7 +109,7 @@ const AIAssistant = () => {
                 {/* Image Preview Area */}
                 {image && (
                     <div className="p-4 border-t border-stone-200 bg-white relative">
-                        <p className="text-xs font-medium text-stone-600 mb-2">Image attached:</p>
+                        <p className="text-xs font-medium text-stone-600 mb-2">Image attacheds:</p>
                         <img src={image.dataUrl} alt="Preview" className="h-20 w-20 object-cover rounded-md" />
                         <button 
                             onClick={() => setImage(null)}
