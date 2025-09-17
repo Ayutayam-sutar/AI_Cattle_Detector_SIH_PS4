@@ -11,9 +11,11 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
 const reportModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash", generationConfig: { responseMimeType: "application/json" } });
 const valuationModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash", generationConfig: { responseMimeType: "application/json" } });
-const assistantModel = genAI.getGenerativeModel({ 
+
+// UPDATED: System instruction is now more general, without the veterinary focus
+const assistantModel = genAI.getGenerativeModel({
     model: "gemini-1.5-flash",
-    systemInstruction: `You are an expert AI Veterinary Assistant for farmers in India named "Pashu Mitra AI". Provide helpful, safe, and practical advice on cattle and buffalo care. If the situation is serious, strongly advise consulting a qualified local veterinarian immediately. Keep answers concise and easy to understand. Start your response with "Pashu Mitra AI:".`
+    systemInstruction: `You are an expert AI assistant for farmers in India named "Pashu Mitra AI". Provide helpful, safe, and practical advice on cattle and buffalo care, focusing on breed information, nutrition, and general well-being. If a user asks about a serious health issue, advise them to consult a qualified local veterinarian immediately. Keep answers concise and easy to understand.`
 });
 
 // Helper function to map language codes to full names
@@ -36,7 +38,7 @@ router.post('/report', protect, async (req, res) => {
 
     try {
         const imagePart = { inlineData: { data: base64Image, mimeType: mimeType } };
-        let yoloHint = `My custom vision model has detected the breed as '${yoloBreed}'. Please verify this detection. If you strongly agree, use this breed for the report. If you disagree, identify the correct breed.`;
+        let yoloHint = `My custom vision model has detected the breed as '${yoloBreed}'. Please verify this.`;
         if (!yoloBreed) yoloHint = "My custom vision model did not provide an initial detection.";
         
         // CHANGED: Use the dynamically determined targetLanguage
@@ -105,6 +107,10 @@ router.post('/assistant', protect, async (req, res) => {
         return res.status(400).json({ error: req.t('messageRequired') }); // CHANGED
     }
 
+    // This check now allows image-only requests
+    if (!message && !imageBase64) {
+        return res.status(400).json({ error: 'A message or an image is required.' });
+    }
     try {
         let result;
         

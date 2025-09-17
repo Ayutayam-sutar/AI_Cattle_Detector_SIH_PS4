@@ -87,7 +87,7 @@ const AIAssistant = () => {
                     {messages.map((msg, index) => (
                         <div key={index} className={`flex items-start gap-3 ${msg.sender === 'user' ? 'flex-row-reverse' : ''}`}>
                             <div className={`flex-shrink-0 h-10 w-10 rounded-full text-white flex items-center justify-center font-semibold text-sm ${msg.sender === 'ai' ? 'bg-emerald-500' : 'bg-stone-600'}`}>
-                                {msg.sender === 'ai' ? 'AI' : user?.name.charAt(0).toUpperCase() || 'U'}
+                                {msg.sender === 'ai' ? 'AI' : user?.name?.charAt(0).toUpperCase() || 'U'}
                             </div>
                             <div className={`max-w-lg rounded-xl shadow-sm ${msg.sender === 'user' ? 'bg-emerald-600 text-white' : 'bg-white text-stone-800'}`}>
                                 {/* Conditionally render the image inside the message bubble */}

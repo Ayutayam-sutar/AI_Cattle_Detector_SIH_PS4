@@ -16,9 +16,15 @@ import StartAnalysisPage from './pages/StartAnalysisPage';
 import MarketplacePage from './pages/MarketplacePage';
 import ValuatorPage from './pages/ValuatorPage';
 
+
+import AIVetAssistant from './components/AIVetAssistant/AIVetAssistant.jsx';
+
 // A simple hash-based router component
+
+
+
 const Router = () => {
-    // We get the hash path, remove the #, and default to '/'
+    
     const [currentPath, setCurrentPath] = useState(window.location.hash.slice(1) || '/');
     const { user, loading } = useAuth();
 
@@ -41,17 +47,17 @@ const Router = () => {
         );
     }
     
-    // Simple routing logic
+    
     const pathSegments = currentPath.split('/');
     const baseRoute = '/' + (pathSegments[1] || '');
     
-    // Protected routes
+    
     if (['/dashboard', '/start-analysis', '/analyze', '/details', '/profile', '/guide', '/find-vet', '/marketplace', '/valuator'].includes(baseRoute) && !user) {
         window.location.hash = '/';
         return null;
     }
     
-    // Public routes that should redirect if logged in
+    
     if (['/login', '/signup'].includes(baseRoute) && user) {
         window.location.hash = '/dashboard';
         return null;
@@ -84,7 +90,7 @@ const Router = () => {
             pageComponent = <ProfilePage />;
             break;
         case '/guide':
-             // Handle both /guide and /guide/topic
+             
             const topic = pathSegments[2];
             pageComponent = topic ? <GuideDetailPage topic={topic} /> : <GuidePage />;
             break;
@@ -98,7 +104,7 @@ const Router = () => {
             pageComponent = <ValuatorPage />;
             break;
         default:
-            // 404 - redirect to dashboard if logged in, else landing
+            
             window.location.hash = user ? '/dashboard' : '/';
             pageComponent = user ? <DashboardPage /> : <LandingPage />;
     }
@@ -193,6 +199,9 @@ const App = () => {
                 `}</style>
                 <Navbar />
                 <Router />
+
+                <AIVetAssistant />
+
             </div>
         </AuthProvider>
     );

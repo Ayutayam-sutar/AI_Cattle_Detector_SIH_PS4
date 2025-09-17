@@ -16,9 +16,9 @@ const SignupPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { signup } = useAuth();
 
-  // src/pages/SignupPage.jsx
+  
 
-const handleSubmit = async (e) => { // Make the function async
+const handleSubmit = async (e) => { 
     e.preventDefault();
     if (isLoading) return;
 

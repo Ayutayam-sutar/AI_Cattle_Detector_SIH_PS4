@@ -112,7 +112,8 @@ const DetailsPage = () => {
     };
 
     const { reportData, yoloData } = record;
-    const { advanced_breed_detector, ai_veterinary_assistant, hyper_local_advisor } = reportData;
+    // ai_veterinary_assistant is no longer destructured
+    const { advanced_breed_detector, hyper_local_advisor } = reportData;
 
     // CHANGED: Health status text is now translated
     const healthStatusText = {

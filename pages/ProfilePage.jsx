@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useTranslation } from 'react-i18next'; // ADDED
+import { useTranslation } from 'react-i18next';
 
 // The StatCard component does not need changes as the label is passed in already translated.
 const StatCard = ({ label, value, accentColor = 'text-blue-600' }) => (
@@ -11,7 +11,7 @@ const StatCard = ({ label, value, accentColor = 'text-blue-600' }) => (
 );
 
 const ProfilePage = () => {
-    const { t, i18n } = useTranslation(); // ADDED
+    const { t, i18n } = useTranslation();
     const { user } = useAuth();
     const [profileImage, setProfileImage] = useState(null);
     const [history, setHistory] = useState([]);
@@ -63,7 +63,6 @@ const ProfilePage = () => {
     const profileStats = useMemo(() => {
         if (!history || history.length === 0) return null;
         const sortedHistory = [...history].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        // CHANGED: Use i18n.language for date formatting
         const lastActivity = new Date(sortedHistory[0].createdAt).toLocaleDateString(i18n.language);
         const getTopItem = (key) => {
             const counts = history.reduce((acc, item) => {
@@ -73,7 +72,6 @@ const ProfilePage = () => {
                 }
                 return acc;
             }, {});
-            // CHANGED: Use translation key for 'N/A'
             return Object.keys(counts).length > 0
                 ? Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0]
                 : t('notAvailable');
@@ -93,10 +91,10 @@ const ProfilePage = () => {
             topLocation: getTopItem('location'),
             healthBreakdown
         };
-    }, [history, t, i18n.language]); // CHANGED: Add dependencies
+    }, [history, t, i18n.language]);
 
     if (isLoading || !user) {
-        return <p className="text-center py-12 text-lg text-stone-600">{t('loadingProfile')}</p> // CHANGED
+        return <p className="text-center py-12 text-lg text-stone-600">{t('loadingProfile')}</p>
     }
     
     const totalHealthRecords = profileStats ? Object.values(profileStats.healthBreakdown).reduce((a, b) => a + b, 0) : 0;
@@ -133,7 +131,6 @@ const ProfilePage = () => {
                         <div className="border-t border-stone-100 p-8">
                             <h3 className="text-2xl font-bold mb-6 text-stone-800 border-b-2 border-emerald-200 pb-2">{t('yourActivityDashboard')}</h3>
                             <dl className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                               {/* CHANGED: Labels are now translated */}
                                <StatCard label={t('totalAnalyses')} value={profileStats.totalAnalyses} accentColor="text-emerald-600" />
                                <StatCard label={t('lastActivity')} value={profileStats.lastActivity} accentColor="text-purple-600" />
                                <StatCard label={t('topBreedIdentified')} value={profileStats.topBreed} accentColor="text-orange-600" />
@@ -147,7 +144,6 @@ const ProfilePage = () => {
                                     if (count === 0) return null;
                                     const percentage = totalHealthRecords > 0 ? (count / totalHealthRecords) * 100 : 0;
                                     let colorClass = '';
-                                    // CHANGED: Use translated status keys for tooltip and text
                                     const translatedStatus = {'Good': t('healthGood'), 'Fair': t('healthFair'), 'Needs Attention': t('healthNeedsAttention')}[status] || status;
                                     if (status === 'Good') colorClass = 'bg-emerald-500';
                                     else if (status === 'Fair') colorClass = 'bg-yellow-500';

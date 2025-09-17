@@ -225,10 +225,10 @@ export const getAIAssistantResponse = async (message, imageObject) => {
  * e.g., [{ breed: 'Gir', confidence: 0.91, ... }]
  */
 export async function detectBreedWithYOLOv8(imageFile) {
-  // This is the URL of the Node.js server you created.
+  
   const endpoint = 'http://localhost:3001/api/analyze';
 
-  // We use FormData to properly send the image file.
+  
   const formData = new FormData();
   formData.append('image', imageFile);
 
@@ -237,10 +237,10 @@ export async function detectBreedWithYOLOv8(imageFile) {
     
     const response = await fetch(endpoint, {
       method: 'POST',
-      body: formData, // No 'Content-Type' header is needed; the browser sets it for FormData.
+      body: formData, 
     });
 
-    // Handle cases where the server responds with an error.
+    
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.error || 'Breed detection failed on the server.');
@@ -252,7 +252,7 @@ export async function detectBreedWithYOLOv8(imageFile) {
 
   } catch (error) {
     console.error('❌ Error calling the YOLOv8 backend:', error);
-    // Re-throw the error so the component that called this function can handle it.
+    
     throw error;
   }
 }

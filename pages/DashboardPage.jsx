@@ -102,8 +102,7 @@ const DashboardPage = () => {
     const filteredHistory = useMemo(() => {
         if (!history) return [];
         return history.filter(item => 
-            (item.reportData?.advanced_breed_detector?.primary_breed || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (item.reportData?.ai_veterinary_assistant?.overall_health_status || '').toLowerCase().includes(searchTerm.toLowerCase())
+            (item.reportData?.advanced_breed_detector?.primary_breed || '').toLowerCase().includes(searchTerm.toLowerCase())
         ).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     }, [history, searchTerm]);
 

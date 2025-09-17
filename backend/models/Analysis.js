@@ -11,10 +11,10 @@ const analysisSchema = new mongoose.Schema({
     image: { type: String, required: true },
     location: { type: String, required: true },
 
-    // This single field will flexibly store the entire report from Gemini
+    
     reportData: { type: Object, required: true },
 
-    // This stores the result from your local YOLO model
+    
     yoloData: { type: Object, required: false },
 
 }, { timestamps: true });
