@@ -12,7 +12,7 @@ const toBase64 = file => new Promise((resolve, reject) => {
 const AIVetAssistant = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([
-        { sender: 'bot', text: 'Hello! I am PashuMitra AI. How can I assist you?', timestamp: new Date() }
+        { sender: 'bot', text: 'Hello! I am PashuDrishti AI. How can I assist you?', timestamp: new Date() }
     ]);
     const [input, setInput] = useState('');
     const [imageFile, setImageFile] = useState(null);
