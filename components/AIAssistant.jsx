@@ -10,11 +10,6 @@ const AIAssistant = () => {
     ]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-<<<<<<< HEAD
-    // State to hold the selected image file and its preview URL
-=======
-    
->>>>>>> 0d0cc4a9fe94227d37c4a54287e2451c6c990d32
     const [image, setImage] = useState(null); 
     const messagesEndRef = useRef(null);
 
@@ -24,24 +19,14 @@ const AIAssistant = () => {
 
     useEffect(scrollToBottom, [messages]);
     
-<<<<<<< HEAD
-    // Function to handle the user selecting an image file
-=======
-    
->>>>>>> 0d0cc4a9fe94227d37c4a54287e2451c6c990d32
     const handleImageSelect = (e) => {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = () => {
                 setImage({
-<<<<<<< HEAD
-                    file: file, // We need the file for the backend
-                    dataUrl: reader.result, // We need the dataUrl for the preview
-=======
-                    file: file, 
-                    dataUrl: reader.result, 
->>>>>>> 0d0cc4a9fe94227d37c4a54287e2451c6c990d32
+                    file: file,
+                    dataUrl: reader.result,
                 });
             };
             reader.readAsDataURL(file);
@@ -49,21 +34,12 @@ const AIAssistant = () => {
     };
 
     const handleSend = async () => {
-<<<<<<< HEAD
-        // Allow sending a message if there is text OR an image
-=======
-        
->>>>>>> 0d0cc4a9fe94227d37c4a54287e2451c6c990d32
         if ((!input.trim() && !image) || isLoading) return;
 
         const userMessage = { 
             sender: 'user', 
             text: input,
-<<<<<<< HEAD
-            image: image?.dataUrl // Add the image preview URL to the message
-=======
-            image: image?.dataUrl 
->>>>>>> 0d0cc4a9fe94227d37c4a54287e2451c6c990d32
+            image: image?.dataUrl
         };
         setMessages(prev => [...prev, userMessage]);
         
@@ -71,19 +47,10 @@ const AIAssistant = () => {
         const imageToSend = image;
 
         setInput('');
-<<<<<<< HEAD
-        setImage(null); // Clear the image preview after sending
+        setImage(null);
         setIsLoading(true);
 
         try {
-            // Pass both the text and the image object to your service
-=======
-        setImage(null); 
-        setIsLoading(true);
-
-        try {
-            
->>>>>>> 0d0cc4a9fe94227d37c4a54287e2451c6c990d32
             const aiResponse = await getAIAssistantResponse(textToSend, imageToSend);
             const aiMessage = { sender: 'ai', text: aiResponse };
             setMessages(prev => [...prev, aiMessage]);
@@ -116,12 +83,10 @@ const AIAssistant = () => {
                     {messages.map((msg, index) => (
                         <div key={index} className={`flex items-start gap-3 ${msg.sender === 'user' ? 'flex-row-reverse' : ''}`}>
                             <div className={`flex-shrink-0 h-10 w-10 rounded-full text-white flex items-center justify-center font-semibold text-sm ${msg.sender === 'ai' ? 'bg-emerald-500' : 'bg-stone-600'}`}>
-                                {msg.sender === 'ai' ? 'AI' : user?.name.charAt(0).toUpperCase() || 'U'}
+                                {msg.sender === 'ai' ? 'AI' : user?.name?.charAt(0).toUpperCase() || 'U'}
                             </div>
                             <div className={`max-w-lg rounded-xl shadow-sm ${msg.sender === 'user' ? 'bg-emerald-600 text-white' : 'bg-white text-stone-800'}`}>
-                                {/* Conditionally render the image inside the message bubble */}
                                 {msg.image && <img src={msg.image} alt="User upload" className="rounded-t-xl max-h-60 w-full object-cover" />}
-                                {/* Only render the text part if there is text */}
                                 {msg.text && <p className="p-4" style={{ whiteSpace: 'pre-wrap' }}>{msg.text}</p>}
                             </div>
                         </div>
@@ -135,10 +100,9 @@ const AIAssistant = () => {
                     <div ref={messagesEndRef} />
                 </div>
                 
-                {/* Image Preview Area */}
                 {image && (
                     <div className="p-4 border-t border-stone-200 bg-white relative">
-                        <p className="text-xs font-medium text-stone-600 mb-2">Image attacheds:</p>
+                        <p className="text-xs font-medium text-stone-600 mb-2">Image attached:</p>
                         <img src={image.dataUrl} alt="Preview" className="h-20 w-20 object-cover rounded-md" />
                         <button 
                             onClick={() => setImage(null)}

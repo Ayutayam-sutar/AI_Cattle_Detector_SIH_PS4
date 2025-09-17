@@ -9,12 +9,12 @@ import { CameraIcon as TakePhotoIcon } from '../components/Icons';
 
 const LoadingOverlay = () => (
   <div className="absolute inset-0 bg-white bg-opacity-90 flex flex-col items-center justify-center z-50 rounded-lg text-center p-4">
-      <style>{`
-        .cow-scanner {
-          width: 150px;
+      <style>{
+      `
+       .cow-scanner {
+          width: 450px;
           height: 100px;
           position: relative;
-          background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.2)" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.25 9.75 16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0 0 20.25 18V9.75a2.25 2.25 0 0 0-2.25-2.25H6A2.25 2.25 0 0 0 3.75 9.75v8.25A2.25 2.25 0 0 0 6 20.25Z" /></svg>');
           background-size: contain;
           background-repeat: no-repeat;
           background-position: center;

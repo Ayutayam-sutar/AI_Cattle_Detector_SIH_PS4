@@ -146,7 +146,7 @@ const ProfilePage = () => {
                             </dl>
                         </div>
                         <div className="border-t border-stone-100 p-8 bg-emerald-50/50">
-                            <h3 className="text-2xl font-bold mb-6 text-stone-800 border-b-2 border-emerald-200 pb-2">Herd Health Overview</h3>
+                            {/* <h3 className="text-2xl font-bold mb-6 text-stone-800 border-b-2 border-emerald-200 pb-2">Herd Health Overview</h3>
                              <div className="w-full bg-stone-200 rounded-full h-10 flex overflow-hidden shadow-inner">
                                 {Object.entries(profileStats.healthBreakdown).map(([status, count]) => {
                                     if (count === 0) return null;
@@ -157,7 +157,7 @@ const ProfilePage = () => {
                                     else if (status === 'Needs Attention') colorClass = 'bg-red-500';
                                     return ( <div key={status} className={`${colorClass} h-full flex items-center justify-center text-white text-sm font-semibold transition-all duration-300 ease-in-out`} style={{ width: `${percentage}%` }} title={`${status}: ${count} (${percentage.toFixed(1)}%)`}> {percentage > 10 && `${status} (${count})`} </div> )
                                 })}
-                            </div>
+                            </div> */}
                         </div>
                     </>
                 ) : (
