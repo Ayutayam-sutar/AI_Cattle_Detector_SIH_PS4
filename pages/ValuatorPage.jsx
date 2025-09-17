@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { getLivestockValuation } from '../services/geminiService';
 import Spinner from '../components/Spinner';
+import { useTranslation } from 'react-i18next'; // ADDED
 
 const initialInputs = {
     breed: '',
@@ -27,10 +28,18 @@ const ValuationSkeleton = () => (
 
 
 const ValuatorPage = () => {
+    const { t } = useTranslation(); // ADDED
     const [inputs, setInputs] = useState(initialInputs);
     const [valuation, setValuation] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    // ADDED: Array for health options to make them translatable
+    const healthOptions = [
+        { value: 'Good', label: t('healthGood') },
+        { value: 'Fair', label: t('healthFair') },
+        { value: 'Needs Attention', label: t('healthNeedsAttention') },
+    ];
 
     const handleInputChange = (e) => {
         setInputs({ ...inputs, [e.target.name]: e.target.value });
@@ -63,58 +72,58 @@ const ValuatorPage = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <header className="text-center mb-12">
                 <h1 className="text-4xl font-bold leading-tight text-stone-900">
-                    Smart Livestock Valuator
+                    {t('valuatorPageTitle')}
                 </h1>
                 <p className="mt-2 text-lg text-stone-600">
-                    Get an AI-powered market valuation for your animal based on key characteristics.
+                    {t('valuatorPageSubtitle')}
                 </p>
             </header>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 animate-slide-in-elliptic-top-fwd">
-                {/* Left side: Form or Reset view */}
                 <div className="bg-white p-8 rounded-lg shadow-lg border border-stone-200  bg-gradient-to-br from-emerald-50 via-white to-blue-50 ">
                     {valuation && !isLoading ? (
                          <div className="flex flex-col items-center justify-center h-full text-center">
-                            <h2 className="text-2xl font-bold text-stone-800 mb-4">Valuation Complete!</h2>
-                            <p className="text-stone-600 mb-8">Your result is displayed. You can start a new valuation at any time.</p>
+                            <h2 className="text-2xl font-bold text-stone-800 mb-4">{t('valuationComplete')}</h2>
+                            <p className="text-stone-600 mb-8">{t('valuationCompleteInfo')}</p>
                             <button 
                                 onClick={handleReset}
                                 className="w-full inline-flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#557369] hover:bg-[#557339]"
                             >
-                                Start New Valuation
+                                {t('startNewValuation')}
                             </button>
                         </div>
                     ) : (
                         <>
-                            <h2 className="text-2xl font-bold text-stone-800 mb-6">Enter Animal Details</h2>
+                            <h2 className="text-2xl font-bold text-stone-800 mb-6">{t('enterAnimalDetails')}</h2>
                             <form onSubmit={handleSubmit} className="space-y-6 ">
                                 <div>
-                                    <label htmlFor="breed" className="block text-sm font-medium text-stone-700">Breed</label>
-                                    <input type="text" name="breed" id="breed" value={inputs.breed} onChange={handleInputChange} required className="mt-1 block w-full px-4 py-3 bg-stone-100 border border-stone-200 rounded-md shadow-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="e.g., Gir, Sahiwal" />
+                                    <label htmlFor="breed" className="block text-sm font-medium text-stone-700">{t('breedLabel')}</label>
+                                    <input type="text" name="breed" id="breed" value={inputs.breed} onChange={handleInputChange} required className="mt-1 block w-full px-4 py-3 bg-stone-100 border border-stone-200 rounded-md shadow-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder={t('breedPlaceholder')} />
                                 </div>
                                 <div>
-                                    <label htmlFor="age" className="block text-sm font-medium text-stone-700">Age (years)</label>
-                                    <input type="number" name="age" id="age" value={inputs.age} onChange={handleInputChange} required min="0" step="0.5" className="mt-1 block w-full px-4 py-3 bg-stone-100 border border-stone-200 rounded-md shadow-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="e.g., 4.5" />
+                                    <label htmlFor="age" className="block text-sm font-medium text-stone-700">{t('ageLabel')}</label>
+                                    <input type="number" name="age" id="age" value={inputs.age} onChange={handleInputChange} required min="0" step="0.5" className="mt-1 block w-full px-4 py-3 bg-stone-100 border border-stone-200 rounded-md shadow-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder={t('agePlaceholder')} />
                                 </div>
                                 <div>
-                                    <label htmlFor="milkYield" className="block text-sm font-medium text-stone-700">Peak Milk Yield (liters/day)</label>
-                                    <input type="number" name="milkYield" id="milkYield" value={inputs.milkYield} onChange={handleInputChange} required min="0" className="mt-1 block w-full px-4 py-3 bg-stone-100 border border-stone-200 rounded-md shadow-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="e.g., 12" />
+                                    <label htmlFor="milkYield" className="block text-sm font-medium text-stone-700">{t('milkYieldLabel')}</label>
+                                    <input type="number" name="milkYield" id="milkYield" value={inputs.milkYield} onChange={handleInputChange} required min="0" className="mt-1 block w-full px-4 py-3 bg-stone-100 border border-stone-200 rounded-md shadow-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder={t('milkYieldPlaceholder')} />
                                 </div>
                                 <div>
-                                    <label htmlFor="health" className="block text-sm font-medium text-stone-700">Health Condition</label>
+                                    <label htmlFor="health" className="block text-sm font-medium text-stone-700">{t('healthConditionLabel')}</label>
                                     <select name="health" id="health" value={inputs.health} onChange={handleInputChange} className="mt-1 block w-full px-4 py-3 bg-stone-100 border border-stone-200 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                                        <option>Good</option>
-                                        <option>Fair</option>
-                                        <option>Needs Attention</option>
+                                        {/* CHANGED: Options are now mapped from a translatable array */}
+                                        {healthOptions.map(option => (
+                                            <option key={option.value} value={option.value}>{option.label}</option>
+                                        ))}
                                     </select>
                                 </div>
                                 <div>
-                                    <label htmlFor="location" className="block text-sm font-medium text-stone-700">Location (for market data)</label>
-                                    <input type="text" name="location" id="location" value={inputs.location} onChange={handleInputChange} required className="mt-1 block w-full px-4 py-3 bg-stone-100 border border-stone-200 rounded-md shadow-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="e.g., Anand, Gujarat" />
+                                    <label htmlFor="location" className="block text-sm font-medium text-stone-700">{t('locationLabel')}</label>
+                                    <input type="text" name="location" id="location" value={inputs.location} onChange={handleInputChange} required className="mt-1 block w-full px-4 py-3 bg-stone-100 border border-stone-200 rounded-md shadow-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder={t('locationPlaceholder')} />
                                 </div>
                                 <div>
                                     <button type="submit" disabled={isLoading || isFormIncomplete} className="w-full inline-flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#557369] hover:bg-[#557339] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:bg-red-400 disabled:cursor-not-allowed">
-                                        {isLoading ? <Spinner /> : 'Calculate Value'}
+                                        {isLoading ? <Spinner /> : t('calculateValueButton')}
                                     </button>
                                 </div>
                             </form>
@@ -122,21 +131,20 @@ const ValuatorPage = () => {
                     )}
                 </div>
 
-                {/* Right side: Result */}
                 <div className="flex items-center justify-center bg-stone-100 p-8 rounded-lg border-2 border-dashed border-stone-300 min-h-[300px] ">
                     {isLoading && ( <ValuationSkeleton /> )}
                     {error && (
                          <div className="text-center text-red-600">
-                             <p><strong>Error</strong></p>
+                             <p><strong>{t('errorTitle')}</strong></p>
                              <p>{error}</p>
                          </div>
                     )}
                     {valuation && !isLoading && (
                         <div className="text-center animate-fade-in w-full ">
-                             <h3 className="text-lg font-medium text-stone-600">Estimated Market Value</h3>
+                             <h3 className="text-lg font-medium text-stone-600">{t('estimatedMarketValue')}</h3>
                              <p className="text-4xl lg:text-5xl font-bold text-emerald-600 my-4">{valuation.estimated_market_value_inr}</p>
                              <div className="mt-6 text-left">
-                                 <h4 className="font-semibold text-stone-800 mb-2">Key Valuation Factors:</h4>
+                                 <h4 className="font-semibold text-stone-800 mb-2">{t('keyValuationFactors')}</h4>
                                  <ul className="list-disc list-inside text-stone-700 space-y-1">
                                     {valuation.valuation_factors.map((factor, i) => <li key={i}>{factor}</li>)}
                                  </ul>
@@ -145,7 +153,7 @@ const ValuatorPage = () => {
                     )}
                      {!valuation && !isLoading && !error && (
                          <div className="text-center text-stone-500">
-                            <p>Give the details of your cow/cattle to get AI-powered valuation.</p>
+                            <p>{t('valuatorInfoBox')}</p>
                          </div>
                      )}
                 </div>

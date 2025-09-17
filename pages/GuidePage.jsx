@@ -1,6 +1,7 @@
 import React from 'react';
 import AIAssistant from '../components/AIAssistant';
 import { HousingIcon, BreedGuideIcon, CalvingIcon, NutritionIcon, HealthIcon } from '../components/Icons';
+import { useTranslation } from 'react-i18next';
 
 const guideTopics = [
     { slug: 'housing', title: 'General Care & Housing', icon: <HousingIcon />, description: 'Protect cattle from weather and predators.' },

@@ -1,6 +1,8 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next'; // ADDED
 
+// The StatCard component does not need changes as the label is passed in already translated.
 const StatCard = ({ label, value, accentColor = 'text-blue-600' }) => (
     <div className="bg-white p-5 rounded-lg shadow-sm transform transition duration-300 hover:scale-105 hover:shadow-md">
         <dt className="text-sm font-medium text-stone-500 truncate">{label}</dt>
@@ -9,19 +11,17 @@ const StatCard = ({ label, value, accentColor = 'text-blue-600' }) => (
 );
 
 const ProfilePage = () => {
+    const { t, i18n } = useTranslation(); // ADDED
     const { user } = useAuth();
     const [profileImage, setProfileImage] = useState(null);
-    const [history, setHistory] = useState([]); // State to hold history from DB
-    const [isLoading, setIsLoading] = useState(true); // State to handle loading
+    const [history, setHistory] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Fetch profile image from localStorage
         const storedImage = localStorage.getItem('profile-image');
         if (storedImage) {
             setProfileImage(storedImage);
         }
-
-        // --- THIS IS THE NEW DATA FETCHING LOGIC ---
         const fetchHistory = async () => {
             setIsLoading(true);
             try {
@@ -44,9 +44,8 @@ const ProfilePage = () => {
                 setIsLoading(false);
             }
         };
-
         fetchHistory();
-    }, [user]); // Re-fetch if the user object changes
+    }, [user]);
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -63,11 +62,9 @@ const ProfilePage = () => {
 
     const profileStats = useMemo(() => {
         if (!history || history.length === 0) return null;
-
         const sortedHistory = [...history].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        
-        const lastActivity = new Date(sortedHistory[0].createdAt).toLocaleDateString();
-
+        // CHANGED: Use i18n.language for date formatting
+        const lastActivity = new Date(sortedHistory[0].createdAt).toLocaleDateString(i18n.language);
         const getTopItem = (key) => {
             const counts = history.reduce((acc, item) => {
                 const value = key === 'primary_breed' ? item.reportData?.advanced_breed_detector?.primary_breed : item.location;
@@ -76,12 +73,11 @@ const ProfilePage = () => {
                 }
                 return acc;
             }, {});
-            
+            // CHANGED: Use translation key for 'N/A'
             return Object.keys(counts).length > 0
                 ? Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0]
-                : 'N/A';
+                : t('notAvailable');
         }
-        
         const healthBreakdown = history.reduce((acc, item) => {
             const status = item.reportData?.ai_veterinary_assistant?.overall_health_status;
             if (status) {
@@ -97,11 +93,10 @@ const ProfilePage = () => {
             topLocation: getTopItem('location'),
             healthBreakdown
         };
-
-    }, [history]);
+    }, [history, t, i18n.language]); // CHANGED: Add dependencies
 
     if (isLoading || !user) {
-        return <p className="text-center py-12 text-lg text-stone-600">Loading user profile...</p>
+        return <p className="text-center py-12 text-lg text-stone-600">{t('loadingProfile')}</p> // CHANGED
     }
     
     const totalHealthRecords = profileStats ? Object.values(profileStats.healthBreakdown).reduce((a, b) => a + b, 0) : 0;
@@ -119,7 +114,7 @@ const ProfilePage = () => {
                             )}
                             <label htmlFor="profile-image-upload" className="absolute -bottom-1 -right-1 p-2 bg-emerald-600 text-white rounded-full cursor-pointer hover:bg-emerald-700 transition-colors duration-200 ease-in-out shadow-md">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fillRule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clipRule="evenodd" /></svg>
-                                <span className="sr-only">Upload profile picture</span>
+                                <span className="sr-only">{t('uploadProfilePicture')}</span>
                             </label>
                             <input id="profile-image-upload" type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
                         </div>
@@ -127,8 +122,7 @@ const ProfilePage = () => {
                             <h1 className="text-4xl font-extrabold tracking-tight">{user.name}</h1>
                             <p className="text-lg opacity-90 mt-1">{user.email}</p>
                             <p className="text-sm opacity-75 mt-1">
-                                {/* FIX: User object from DB has `createdAt`, not `memberSince` */}
-                                Member since {new Date(user.createdAt).toLocaleDateString()}
+                                {t('memberSince')} {new Date(user.createdAt).toLocaleDateString(i18n.language)}
                             </p>
                         </div>
                     </div>
@@ -137,34 +131,37 @@ const ProfilePage = () => {
                 {profileStats ? (
                     <>
                         <div className="border-t border-stone-100 p-8">
-                            <h3 className="text-2xl font-bold mb-6 text-stone-800 border-b-2 border-emerald-200 pb-2">Your Activity Dashboard</h3>
+                            <h3 className="text-2xl font-bold mb-6 text-stone-800 border-b-2 border-emerald-200 pb-2">{t('yourActivityDashboard')}</h3>
                             <dl className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                               <StatCard label="Total Analyses" value={profileStats.totalAnalyses} accentColor="text-emerald-600" />
-                               <StatCard label="Last Activity" value={profileStats.lastActivity} accentColor="text-purple-600" />
-                               <StatCard label="Top Breed Identified" value={profileStats.topBreed} accentColor="text-orange-600" />
-                               <StatCard label="Top Location" value={profileStats.topLocation} accentColor="text-indigo-600" />
+                               {/* CHANGED: Labels are now translated */}
+                               <StatCard label={t('totalAnalyses')} value={profileStats.totalAnalyses} accentColor="text-emerald-600" />
+                               <StatCard label={t('lastActivity')} value={profileStats.lastActivity} accentColor="text-purple-600" />
+                               <StatCard label={t('topBreedIdentified')} value={profileStats.topBreed} accentColor="text-orange-600" />
+                               <StatCard label={t('topLocation')} value={profileStats.topLocation} accentColor="text-indigo-600" />
                             </dl>
                         </div>
                         <div className="border-t border-stone-100 p-8 bg-emerald-50/50">
-                            <h3 className="text-2xl font-bold mb-6 text-stone-800 border-b-2 border-emerald-200 pb-2">Herd Health Overview</h3>
+                            <h3 className="text-2xl font-bold mb-6 text-stone-800 border-b-2 border-emerald-200 pb-2">{t('herdHealthOverview')}</h3>
                              <div className="w-full bg-stone-200 rounded-full h-10 flex overflow-hidden shadow-inner">
                                 {Object.entries(profileStats.healthBreakdown).map(([status, count]) => {
                                     if (count === 0) return null;
                                     const percentage = totalHealthRecords > 0 ? (count / totalHealthRecords) * 100 : 0;
                                     let colorClass = '';
+                                    // CHANGED: Use translated status keys for tooltip and text
+                                    const translatedStatus = {'Good': t('healthGood'), 'Fair': t('healthFair'), 'Needs Attention': t('healthNeedsAttention')}[status] || status;
                                     if (status === 'Good') colorClass = 'bg-emerald-500';
                                     else if (status === 'Fair') colorClass = 'bg-yellow-500';
                                     else if (status === 'Needs Attention') colorClass = 'bg-red-500';
-                                    return ( <div key={status} className={`${colorClass} h-full flex items-center justify-center text-white text-sm font-semibold transition-all duration-300 ease-in-out`} style={{ width: `${percentage}%` }} title={`${status}: ${count} (${percentage.toFixed(1)}%)`}> {percentage > 10 && `${status} (${count})`} </div> )
+                                    return ( <div key={status} className={`${colorClass} h-full flex items-center justify-center text-white text-sm font-semibold transition-all duration-300 ease-in-out`} style={{ width: `${percentage}%` }} title={`${translatedStatus}: ${count} (${percentage.toFixed(1)}%)`}> {percentage > 10 && `${translatedStatus} (${count})`} </div> )
                                 })}
                             </div>
                         </div>
                     </>
                 ) : (
                     <div className="border-t border-stone-100 px-8 py-10 text-center">
-                         <p className="text-stone-600 text-lg">No activity history found. Perform an analysis to see your personalized stats here!</p>
+                         <p className="text-stone-600 text-lg">{t('noActivityFound')}</p>
                          <button onClick={() => window.location.hash = '/start-analysis'} className="mt-6 px-6 py-3 bg-emerald-600 text-white font-semibold rounded-lg shadow-md hover:bg-emerald-700 transition-colors duration-200 ease-in-out transform hover:scale-105">
-                            Start Your First Analysis
+                            {t('startYourFirstAnalysisButton')}
                          </button>
                     </div>
                 )}

@@ -3,6 +3,7 @@ import AnimatedCounter from '../components/AnimatedCounter';
 import Footer from '../components/Footer';
 import { useOnScreen } from '../hooks/useOnScreen';
 import { CameraIcon, BrainIcon, ReportIcon } from '../components/Icons';
+import { useTranslation } from 'react-i18next'; // ADDED
 
 const Section = ({ children }) => {
   const [ref, isVisible] = useOnScreen({ threshold: 0.1 });
@@ -17,6 +18,8 @@ const Section = ({ children }) => {
 };
 
 const LandingPage = () => {
+    const { t } = useTranslation(); // ADDED
+
     return (
         <>
         <div className="relative pt-16 pb-32 flex content-center items-center justify-center min-h-[75vh]">
@@ -25,14 +28,14 @@ const LandingPage = () => {
             </div>
             <div className="container relative mx-auto text-center">
                 <h1 className="animate-tracking-in-expand text-white font-semibold text-5xl ">
-                    AI Precision for India's Dairy Future.
+                    {t('landingHeroTitle')}
                 </h1>
                 <p className="mt-10 text-lg text-gray-300 animate-fade-in" style={{ animationDelay: '1s' }}>
-                    Automating Animal Type Classification for the Rashtriya Gokul Mission.
+                    {t('landingHeroSubtitle')}
                 </p>
                 <div className="mt-12">
-                    <button onClick={() => window.location.hash = '/signup'} className="get-started-btn text-white font-bold px-6 py-3 rounded-md shadow outline-none focus:outline-none mr-1 mb-1 bg-[#557369] border border-white active:bg-indigo-600 uppercase text-sm hover:shadow-lg ease-linear transition-all duration-150 transform hover:scale-105">Get Started</button>
-                    <button onClick={() => window.location.hash = '/login'} className="login-btn ml-4 text-white font-bold px-6 py-3 rounded-md shadow outline-none focus:outline-none mr-1 mb-1 bg-transparent border border-white active:bg-gray-700 uppercase text-sm hover:shadow-lg ease-linear transition-all duration-150 transform hover:scale-105">Login</button>
+                    <button onClick={() => window.location.hash = '/signup'} className="get-started-btn text-white font-bold px-6 py-3 rounded-md shadow outline-none focus:outline-none mr-1 mb-1 bg-[#557369] border border-white active:bg-indigo-600 uppercase text-sm hover:shadow-lg ease-linear transition-all duration-150 transform hover:scale-105">{t('getStarted')}</button>
+                    <button onClick={() => window.location.hash = '/login'} className="login-btn ml-4 text-white font-bold px-6 py-3 rounded-md shadow outline-none focus:outline-none mr-1 mb-1 bg-transparent border border-white active:bg-gray-700 uppercase text-sm hover:shadow-lg ease-linear transition-all duration-150 transform hover:scale-105">{t('login')}</button>
                 </div>
             </div>
         </div>
@@ -42,9 +45,9 @@ const LandingPage = () => {
                 <Section>
                     <div className="flex flex-wrap items-center ">
                         <div className="w-full md:w-5/12 px-4 mr-auto ml-auto">
-                            <h3 className="text-3xl mb-2 font-semibold leading-normal text-white mt-8">How It Works</h3>
+                            <h3 className="text-3xl mb-2 font-semibold leading-normal text-white mt-8">{t('howItWorksTitle')}</h3>
                             <p className="text-lg font-light leading-relaxed mt-4 mb-4 text-gray-400">
-                                Our platform simplifies cattle evaluation into three easy steps. Just capture an image, let our AI analyze it, and receive an instant, data-driven decision.
+                                {t('howItWorksDesc')}
                             </p>
                         </div>
 
@@ -54,22 +57,22 @@ const LandingPage = () => {
                                     <div className="flex items-start mb-5">
                                         <div className="text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-indigo-500 mr-5"><CameraIcon/></div>
                                         <div>
-                                            <h6 className="text-xl font-semibold text-white">1. Capture</h6>
-                                            <p className="mt-2 text-gray-400">Upload a clear side-profile image of the animal. No special equipment needed—just your phone.</p>
+                                            <h6 className="text-xl font-semibold text-white">{t('step1CaptureTitle')}</h6>
+                                            <p className="mt-2 text-gray-400">{t('step1CaptureDesc')}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-start mb-4">
                                         <div className="text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-indigo-500 mr-5"><BrainIcon/></div>
                                         <div>
-                                            <h6 className="text-xl font-semibold text-white">2. Analyze</h6>
-                                            <p className="mt-2 text-gray-400">Our AI, powered by Google Gemini, performs a detailed analysis against RGM guidelines in seconds.</p>
+                                            <h6 className="text-xl font-semibold text-white">{t('step2AnalyzeTitle')}</h6>
+                                            <p className="mt-2 text-gray-400">{t('step2AnalyzeDesc')}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-start">
                                         <div className="text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-indigo-500 mr-5"><ReportIcon/></div>
                                         <div>
-                                            <h6 className="text-xl font-semibold text-white">3. Decide</h6>
-                                            <p className="mt-2 text-gray-400">Receive an objective, consistent, and detailed report card for each animal, ready for decision-making.</p>
+                                            <h6 className="text-xl font-semibold text-white">{t('step3DecideTitle')}</h6>
+                                            <p className="mt-2 text-gray-400">{t('step3DecideDesc')}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -80,8 +83,8 @@ const LandingPage = () => {
                 <Section>
                     <div className="container mx-auto px-4 py-20">
                         <div className="text-center mb-12">
-                            <h2 className="text-3xl font-semibold text-white">Driving Impact at a National Scale</h2>
-                            <p className="mt-2 text-lg text-gray-400">Leveraging AI to support a cornerstone of India's economy.</p>
+                            <h2 className="text-3xl font-semibold text-white">{t('impactTitle')}</h2>
+                            <p className="mt-2 text-lg text-gray-400">{t('impactSubtitle')}</p>
                         </div>
                         <div className="flex flex-wrap justify-center text-center gap-y-8">
                             <div className="w-full sm:w-1/2 lg:w-1/3 px-4">
@@ -89,7 +92,7 @@ const LandingPage = () => {
                                     <h3 className="text-5xl font-bold text-indigo-400">
                                         <AnimatedCounter target={185} suffix=" Million+" />
                                     </h3>
-                                    <p className="mt-2 text-lg font-semibold text-gray-300">Cattle To Be Impacted</p>
+                                    <p className="mt-2 text-lg font-semibold text-gray-300">{t('impactStat1')}</p>
                                 </div>
                             </div>
                              <div className="w-full sm:w-1/2 lg:w-1/3 px-4">
@@ -97,7 +100,7 @@ const LandingPage = () => {
                                     <h3 className="text-5xl font-bold text-indigo-400">
                                         <AnimatedCounter target={5} prefix="₹" suffix="+ Lakh Crore" />
                                     </h3>
-                                    <p className="mt-2 text-lg font-semibold text-gray-300">Dairy Industry Value</p>
+                                    <p className="mt-2 text-lg font-semibold text-gray-300">{t('impactStat2')}</p>
                                 </div>
                             </div>
                             <div className="w-full sm:w-1/2 lg:w-1/3 px-4">
@@ -105,7 +108,7 @@ const LandingPage = () => {
                                     <h3 className="text-5xl font-bold text-indigo-400">
                                         <AnimatedCounter target={95} suffix="%+" />
                                     </h3>
-                                    <p className="mt-2 text-lg font-semibold text-gray-300">Scoring Consistency</p>
+                                    <p className="mt-2 text-lg font-semibold text-gray-300">{t('impactStat3')}</p>
                                 </div>
                             </div>
                         </div>

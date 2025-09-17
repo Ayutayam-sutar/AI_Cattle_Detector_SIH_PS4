@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Spinner from '../components/Spinner';
+import { useTranslation } from 'react-i18next';
 
 const SignupPage = () => {
+  const { t, i18n } = useTranslation();
+   // --- DEBUGGING CODE ---
+  console.log("--- SIGNUP PAGE RENDERED ---");
+  console.log("Current language from i18n:", i18n.language);
+  console.log("Translation for 'signupTitle':", t('signupTitle'));
+  // --- END OF DEBUG CODE ---
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

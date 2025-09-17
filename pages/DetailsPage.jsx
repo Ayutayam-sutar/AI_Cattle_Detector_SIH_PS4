@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Spinner from '../components/Spinner';
 import { PositiveIcon, NeutralIcon, ConcernIcon, BreedDetectorIcon, VetAssistantIcon, LocalAdvisorIcon, BackIcon, ShareIcon } from '../components/Icons';
-// Note: You might need to install html2canvas if you haven't already: npm install html2canvas
 import html2canvas from 'html2canvas';
+import { useTranslation } from 'react-i18next'; // ADDED
 
+// The InfoCard component does not need changes.
 const InfoCard = ({ title, children, icon }) => (
     <div className="bg-white rounded-lg shadow-lg p-6 border border-stone-200">
         <div className="flex items-center border-b border-stone-200 pb-4 mb-4">
@@ -15,6 +16,7 @@ const InfoCard = ({ title, children, icon }) => (
 );
 
 const DetailsPage = () => {
+    const { t, i18n } = useTranslation(); // ADDED
     const [record, setRecord] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -26,34 +28,23 @@ const DetailsPage = () => {
             setLoading(true);
             setError(null);
             try {
-                // 1. Get the record ID from the URL hash
                 const recordId = window.location.hash.split('/')[2];
-                if (!recordId) {
-                    throw new Error('Record ID not found in URL.');
-                }
+                if (!recordId) { throw new Error('Record ID not found in URL.'); }
 
-                // 2. Get user data (and token) from session storage
                 const storedUser = sessionStorage.getItem('cattle-classifier-user');
                 const user = storedUser ? JSON.parse(storedUser) : null;
-                if (!user || !user.token) {
-                    throw new Error('You must be logged in to view this page.');
-                }
+                if (!user || !user.token) { throw new Error('You must be logged in to view this page.'); }
 
-                // 3. Fetch the specific analysis from your backend API
                 const response = await fetch(`http://localhost:3001/api/analyses/${recordId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${user.token}`
-                    }
+                    headers: { 'Authorization': `Bearer ${user.token}` }
                 });
 
                 if (!response.ok) {
                     const errorData = await response.json();
                     throw new Error(errorData.message || 'Could not load analysis');
                 }
-
                 const data = await response.json();
                 setRecord(data);
-
             } catch (err) {
                 console.error("Failed to fetch details:", err);
                 setError(err.message);
@@ -61,17 +52,15 @@ const DetailsPage = () => {
                 setLoading(false);
             }
         };
-
         fetchAnalysisDetails();
-    }, []); // Runs once when the component loads
+    }, []);
 
     const handleShare = async () => {
         if (!reportRef.current || isSharing) return;
-
         setIsSharing(true);
         try {
             const element = reportRef.current;
-            const canvas = await html2canvas(element, { scale: 2, backgroundColor: '#f5f5f4', useCORS: true }); // bg-stone-50
+            const canvas = await html2canvas(element, { scale: 2, backgroundColor: '#f5f5f4', useCORS: true });
             const link = document.createElement('a');
             link.download = `pashudrishti-report-${record?._id || Date.now()}.png`;
             link.href = canvas.toDataURL('image/png');
@@ -80,32 +69,29 @@ const DetailsPage = () => {
             document.body.removeChild(link);
         } catch (shareError) {
             console.error("Failed to generate report image:", shareError);
-            setError("Sorry, there was an error generating the report image.");
+            setError(t('errorImageGeneration'));
         } finally {
             setIsSharing(false);
         }
     };
 
     if (loading) {
-        return (
-            <div className="h-[calc(100vh-64px)] w-full flex items-center justify-center">
-                <div className="flex items-center text-stone-700"><Spinner /><span className="ml-2">Loading record...</span></div>
-            </div>
-        );
+        return ( <div className="h-[calc(100vh-64px)] w-full flex items-center justify-center"> <div className="flex items-center text-stone-700"><Spinner /><span className="ml-2">{t('loadingRecord')}</span></div></div> );
     }
 
     if (error || !record) {
         return (
             <div className="h-[calc(100vh-64px)] w-full flex items-center justify-center text-center px-4">
                 <div>
-                    <h2 className="text-xl font-semibold text-red-500">Could not load analysis</h2>
-                    <p className="text-stone-600 mt-2">{error || 'The requested record does not exist.'}</p>
-                    <button onClick={() => window.location.hash = '/dashboard'} className="mt-6 inline-block px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700">Back to Dashboard</button>
+                    <h2 className="text-xl font-semibold text-red-500">{t('errorCouldNotLoad')}</h2>
+                    <p className="text-stone-600 mt-2">{error || t('errorRecordNotFound')}</p>
+                    <button onClick={() => window.location.hash = '/dashboard'} className="mt-6 inline-block px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700">{t('backToDashboard')}</button>
                 </div>
             </div>
         );
     }
     
+    // This function's logic remains the same, but the text it outputs will be translated in the JSX.
     const getConditionBadgeColor = (condition) => {
         if (!condition) return 'bg-stone-100 text-stone-800';
         switch (condition.toLowerCase()) {
@@ -128,61 +114,54 @@ const DetailsPage = () => {
     const { reportData, yoloData } = record;
     const { advanced_breed_detector, ai_veterinary_assistant, hyper_local_advisor } = reportData;
 
+    // CHANGED: Health status text is now translated
+    const healthStatusText = {
+        'Good': t('healthGood'),
+        'Fair': t('healthFair'),
+        'Needs Attention': t('healthNeedsAttention')
+    }[ai_veterinary_assistant.overall_health_status] || ai_veterinary_assistant.overall_health_status;
+
     return (
         <div className="bg-stone-50 min-h-screen">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="mb-6 flex justify-between items-center">
                      <button onClick={() => window.history.back()} className="inline-flex items-center text-emerald-600 hover:underline bg-transparent border-none cursor-pointer">
                          <BackIcon />
-                         Back
+                         {t('backButton')}
                      </button>
-                     <button
-                         onClick={handleShare}
-                         disabled={isSharing}
-                         className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:bg-emerald-400"
-                     >
-                         {isSharing ? (<><Spinner /><span>Generating...</span></>) : (<><ShareIcon /><span>Share Report</span></>)}
+                     <button onClick={handleShare} disabled={isSharing} className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:bg-emerald-400">
+                         {isSharing ? (<><Spinner /><span>{t('generating')}</span></>) : (<><ShareIcon /><span>{t('shareReportButton')}</span></>)}
                      </button>
                 </div>
                 
                 <div ref={reportRef} className="bg-stone-50 p-4 sm:p-8 rounded-lg">
                     <header className="text-center mb-8">
-                        <h1 className="text-3xl font-bold text-stone-900">Pashu Sahayak AI Report</h1>
-                        <p className="text-md text-stone-500">Analyzed on {new Date(record.createdAt).toLocaleString()}</p>
+                        <h1 className="text-3xl font-bold text-stone-900">{t('aiReportTitle')}</h1>
+                        <p className="text-md text-stone-500">{t('analyzedOn')} {new Date(record.createdAt).toLocaleString(i18n.language)}</p>
                     </header>
 
                     <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
                         <div className="lg:col-span-2">
                             <img src={record.image} alt={advanced_breed_detector.primary_breed} className="w-full h-auto object-cover rounded-lg shadow-xl" />
                         </div>
-
                         <div className="lg:col-span-3 space-y-8">
-                           <InfoCard title="Gemini AI: Detailed Breed Analysis" icon={<BreedDetectorIcon />}>
-                                <p><strong>Primary Breed (Gemini):</strong> <span className="font-bold text-emerald-700">{advanced_breed_detector.primary_breed}</span></p>
-                                <p><strong>Confidence Score (Gemini):</strong> <span className="font-semibold">{(advanced_breed_detector.confidence_score * 100).toFixed(1)}%</span></p>
-                                
-                                {/* {yoloData && yoloData.length > 0 && (
-                                    <p className="text-sm text-stone-600 pt-2 border-t mt-2">
-                                        <strong>Initial Detection (Local Model):</strong> {yoloData[0].breed} at {Math.round(yoloData[0].confidence * 100)+28}% confidence.
-                                    </p>
-                                )} */}
-
+                           <InfoCard title={t('detailedBreedAnalysis')} icon={<BreedDetectorIcon />}>
+                                <p><strong>{t('primaryBreed')}:</strong> <span className="font-bold text-emerald-700">{advanced_breed_detector.primary_breed}</span></p>
+                                <p><strong>{t('confidenceScore')}:</strong> <span className="font-semibold">{(advanced_breed_detector.confidence_score * 100).toFixed(1)}%</span></p>
                                 <div className="pt-3 mt-3 border-t border-stone-200">
-                                    <h4 className="font-semibold text-stone-800 mb-2">Breed Profile</h4>
-                                    <p><strong>Origin:</strong> <span>{advanced_breed_detector.breed_origin}</span></p>
-                                    <p><strong>Formation:</strong> <span>{advanced_breed_detector.breed_formation}</span></p>
+                                    <h4 className="font-semibold text-stone-800 mb-2">{t('breedProfile')}</h4>
+                                    <p><strong>{t('origin')}:</strong> <span>{advanced_breed_detector.breed_origin}</span></p>
+                                    <p><strong>{t('formation')}:</strong> <span>{advanced_breed_detector.breed_formation}</span></p>
                                 </div>
-                                
                                 <div className="pt-3 mt-3 border-t border-stone-200">
-                                    <h4 className="font-semibold text-stone-800 mb-2">Key Identifiers</h4>
+                                    <h4 className="font-semibold text-stone-800 mb-2">{t('keyIdentifiers')}</h4>
                                     <ul className="list-disc list-inside text-sm text-stone-600 space-y-1">
                                         {advanced_breed_detector.key_identifiers.map((id, i) => <li key={i}>{id}</li>)}
                                     </ul>
                                 </div>
-
                                 {advanced_breed_detector.secondary_breeds && advanced_breed_detector.secondary_breeds.length > 0 && (
                                     <div className="pt-3 mt-3 border-t border-stone-200">
-                                        <h4 className="font-semibold text-stone-800 mb-2">Possible Cross-Breed Influence</h4>
+                                        <h4 className="font-semibold text-stone-800 mb-2">{t('crossBreedInfluence')}</h4>
                                         <ul className="space-y-1">
                                             {advanced_breed_detector.secondary_breeds.map((sb, i) => (
                                                 <li key={i} className="text-sm">
@@ -194,39 +173,33 @@ const DetailsPage = () => {
                                 )}
                             </InfoCard>
                             
-                           <InfoCard title="AI Veterinary Assistant" icon={<VetAssistantIcon />}>
+                           <InfoCard title={t('aiVetAssistant')} icon={<VetAssistantIcon />}>
                                 <div className="space-y-4">
-                                    <p><strong>Overall Health:</strong> <span className={`px-2 py-1 rounded-full text-sm font-medium ${getConditionBadgeColor(ai_veterinary_assistant.overall_health_status)}`}>{ai_veterinary_assistant.overall_health_status}</span></p>
-                                    <h4 className="font-semibold text-stone-800 pt-4 border-t border-stone-200">Detailed Observations:</h4>
+                                    <p><strong>{t('overallHealth')}</strong> <span className={`px-2 py-1 rounded-full text-sm font-medium ${getConditionBadgeColor(ai_veterinary_assistant.overall_health_status)}`}>{healthStatusText}</span></p>
+                                    <h4 className="font-semibold text-stone-800 pt-4 border-t border-stone-200">{t('detailedObservations')}</h4>
                                     <ul className="space-y-3">
                                         {ai_veterinary_assistant.detailed_observations.map((obs, i) => {
                                             const { icon, color } = getObservationStatusStyle(obs.status);
                                             return (
                                                 <li key={i} className="flex items-start">
                                                     <span className={`mr-3 mt-1 flex-shrink-0 ${color}`}>{icon}</span>
-                                                    <div>
-                                                        <span className="font-semibold">{obs.area}:</span> {obs.observation}
-                                                    </div>
+                                                    <div><span className="font-semibold">{obs.area}:</span> {obs.observation}</div>
                                                 </li>
                                             );
                                         })}
                                     </ul>
-
                                     <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-md">
-                                       <p className="font-semibold text-emerald-800">Recommendation:</p>
+                                       <p className="font-semibold text-emerald-800">{t('recommendation')}</p>
                                        <p>{ai_veterinary_assistant.veterinary_recommendation}</p>
                                     </div>
                                 </div>
                             </InfoCard>
                             
-                           <InfoCard title={`Hyper-Local Advisor (${hyper_local_advisor.language})`} icon={<LocalAdvisorIcon />}>
+                           <InfoCard title={t('hyperLocalAdvisorTitle', { lang: hyper_local_advisor.language })} icon={<LocalAdvisorIcon />}>
                                <div className="prose prose-sm max-w-none text-stone-700">
-                                   <h4>Feeding Tip</h4>
-                                   <p>{hyper_local_advisor.feeding_tip}</p>
-                                   <h4>Housing Tip</h4>
-                                   <p>{hyper_local_advisor.housing_tip}</p>
-                                   <h4>Seasonal Tip</h4>
-                                   <p>{hyper_local_advisor.seasonal_tip}</p>
+                                   <h4>{t('feedingTip')}</h4><p>{hyper_local_advisor.feeding_tip}</p>
+                                   <h4>{t('housingTip')}</h4><p>{hyper_local_advisor.housing_tip}</p>
+                                   <h4>{t('seasonalTip')}</h4><p>{hyper_local_advisor.seasonal_tip}</p>
                                </div>
                             </InfoCard>
                         </div>
