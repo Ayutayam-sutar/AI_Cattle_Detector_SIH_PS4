@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Spinner from '../components/Spinner';
+import { useTranslation } from 'react-i18next';
 
 const LoginPage = () => {
+  const { t, i18n } = useTranslation();
+  // --- ADD THESE THREE LINES FOR DEBUGGING ---
+  console.log("--- LOGIN PAGE RENDERED ---");
+  console.log("Current language from i18n:", i18n.language);
+  console.log("Translation for 'loginTitle':", t('loginTitle'));
+  // --- END OF DEBUG CODE ---
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);

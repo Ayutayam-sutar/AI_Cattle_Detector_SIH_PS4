@@ -11,7 +11,8 @@ router.get('/', protect, async (req, res) => {
         const analyses = await Analysis.find({ user: req.user._id }).sort({ createdAt: -1 });
         res.json(analyses);
     } catch (error) {
-        res.status(500).json({ message: 'Server Error' });
+        // CHANGED: Using translated error message
+        res.status(500).json({ message: req.t('serverError') });
     }
 });
 
@@ -34,8 +35,9 @@ router.post('/', protect, async (req, res) => {
         res.status(201).json(savedAnalysis);
 
     } catch (error) {
-        console.error("ERROR SAVING ANALYSIS:", error); 
-        res.status(500).json({ message: 'Server Error while saving analysis.', error: error.message });
+        console.error("ERROR SAVING ANALYSIS:", error); // Better logging
+        // CHANGED: Using translated error message
+        res.status(500).json({ message: req.t('saveError'), error: error.message });
     }
 });
 
@@ -46,12 +48,14 @@ router.get('/:id', protect, async (req, res) => {
         const analysis = await Analysis.findById(req.params.id);
 
         if (!analysis) {
-            return res.status(404).json({ message: 'Analysis not found' });
+            // CHANGED: Using translated error message
+            return res.status(404).json({ message: req.t('analysisNotFound') });
         }
 
         
         if (analysis.user.toString() !== req.user._id.toString()) {
-            return res.status(401).json({ message: 'Not authorized to view this record' });
+            // CHANGED: Using translated error message
+            return res.status(401).json({ message: req.t('notAuthorized') });
         }
 
         res.json(analysis);
@@ -59,9 +63,11 @@ router.get('/:id', protect, async (req, res) => {
         console.error(error);
         
         if (error.kind === 'ObjectId') {
-             return res.status(404).json({ message: 'Analysis not found' });
+             // CHANGED: Using translated error message
+             return res.status(404).json({ message: req.t('analysisNotFound') });
         }
-        res.status(500).json({ message: 'Server Error' });
+        // CHANGED: Using translated error message
+        res.status(500).json({ message: req.t('serverError') });
     }
 });
 

@@ -10,6 +10,7 @@ const AIAssistant = () => {
     ]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    // State to hold the selected image file and its preview URL
     const [image, setImage] = useState(null); 
     const messagesEndRef = useRef(null);
 
@@ -19,14 +20,15 @@ const AIAssistant = () => {
 
     useEffect(scrollToBottom, [messages]);
     
+    // Function to handle the user selecting an image file
     const handleImageSelect = (e) => {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = () => {
                 setImage({
-                    file: file,
-                    dataUrl: reader.result,
+                    file: file, // We need the file for the backend
+                    dataUrl: reader.result, // We need the dataUrl for the preview
                 });
             };
             reader.readAsDataURL(file);
@@ -34,12 +36,13 @@ const AIAssistant = () => {
     };
 
     const handleSend = async () => {
+        // Allow sending a message if there is text OR an image
         if ((!input.trim() && !image) || isLoading) return;
 
         const userMessage = { 
             sender: 'user', 
             text: input,
-            image: image?.dataUrl
+            image: image?.dataUrl // Add the image preview URL to the message
         };
         setMessages(prev => [...prev, userMessage]);
         
@@ -47,10 +50,11 @@ const AIAssistant = () => {
         const imageToSend = image;
 
         setInput('');
-        setImage(null);
+        setImage(null); // Clear the image preview after sending
         setIsLoading(true);
 
         try {
+            // Pass both the text and the image object to your service
             const aiResponse = await getAIAssistantResponse(textToSend, imageToSend);
             const aiMessage = { sender: 'ai', text: aiResponse };
             setMessages(prev => [...prev, aiMessage]);
@@ -86,7 +90,9 @@ const AIAssistant = () => {
                                 {msg.sender === 'ai' ? 'AI' : user?.name?.charAt(0).toUpperCase() || 'U'}
                             </div>
                             <div className={`max-w-lg rounded-xl shadow-sm ${msg.sender === 'user' ? 'bg-emerald-600 text-white' : 'bg-white text-stone-800'}`}>
+                                {/* Conditionally render the image inside the message bubble */}
                                 {msg.image && <img src={msg.image} alt="User upload" className="rounded-t-xl max-h-60 w-full object-cover" />}
+                                {/* Only render the text part if there is text */}
                                 {msg.text && <p className="p-4" style={{ whiteSpace: 'pre-wrap' }}>{msg.text}</p>}
                             </div>
                         </div>
@@ -100,6 +106,7 @@ const AIAssistant = () => {
                     <div ref={messagesEndRef} />
                 </div>
                 
+                {/* Image Preview Area */}
                 {image && (
                     <div className="p-4 border-t border-stone-200 bg-white relative">
                         <p className="text-xs font-medium text-stone-600 mb-2">Image attached:</p>

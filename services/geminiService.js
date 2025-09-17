@@ -160,7 +160,11 @@ export async function getLivestockValuation(inputs) {
 }
 
 
+// frontend/src/services/geminiService.js
 
+// ... (keep your other service functions)
+
+// Helper function to read a file and convert it to a base64 string
 const fileToBase64 = (file) => new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);

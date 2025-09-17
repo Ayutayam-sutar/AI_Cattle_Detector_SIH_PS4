@@ -15,8 +15,12 @@ const upload = multer({ storage: storage });
 router.post('/', upload.single('image'), async (req, res) => {
     console.log('Request received at /api/analyze');
     if (!req.file) {
-        return res.status(400).json({ error: 'No image file provided.' });
+        // CHANGED: Using translated error message
+        return res.status(400).json({ error: req.t('noImageFile') });
     }
+
+    // ADDED: Get the language from the i18next middleware
+    const userLanguage = req.language || 'en'; // Default to 'en' if not detected
 
     const pythonApiUrl = 'http://127.0.0.1:5000/predict';
 
@@ -27,7 +31,10 @@ router.post('/', upload.single('image'), async (req, res) => {
             contentType: req.file.mimetype,
         });
 
-        console.log('Forwarding image to Python service...');
+        // ADDED: Append the language code to the form data
+        formData.append('language', userLanguage);
+
+        console.log(`Forwarding image to Python service for language: ${userLanguage}...`);
         const response = await axios.post(pythonApiUrl, formData, {
             headers: { ...formData.getHeaders() },
         });
@@ -36,7 +43,8 @@ router.post('/', upload.single('image'), async (req, res) => {
         res.json(response.data);
     } catch (error) {
         console.error('❌ Error calling Python API:', error.message);
-        res.status(500).json({ error: 'Failed to analyze image.' });
+        // CHANGED: Using translated error message
+        res.status(500).json({ error: req.t('analysisFailed') });
     }
 });
 

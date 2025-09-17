@@ -1,5 +1,6 @@
 import React from 'react';
 import { BackIcon } from '../components/Icons';
+import { useTranslation } from 'react-i18next';
 
 const guideContent = {
     housing: {
